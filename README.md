@@ -23,8 +23,8 @@ Perfect for learning Go web development, building productivity applications, or 
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd todo-api
+git clone https://github.com/noobconner21/go-todo-api.git
+cd go-todo-api
 ```
 
 2. Install dependencies:
