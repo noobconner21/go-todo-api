@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App - Go API Frontend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">Todo App</h1>
+        <p class="text-gray-600">Powered by Go API & Tailwind CSS</p>
+      </div>
+
+      <!-- Add Todo Form -->
+      <div class="max-w-md mx-auto mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Todo</h2>
+          <form id="addTodoForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Todo Item</label
+              >
+              <input
+                type="text"
+                id="todoInput"
+                placeholder="Enter your todo..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              id="addBtn"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center"
+            >
+              Add Todo
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="max-w-4xl mx-auto mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-indigo-600" id="totalTodos">
+              0
+            </div>
+            <div class="text-gray-600">Total Todos</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-green-600" id="completedTodos">
+              0
+            </div>
+            <div class="text-gray-600">Completed</div>
+          </div>
+          <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="text-3xl font-bold text-orange-600" id="pendingTodos">
+              0
+            </div>
+            <div class="text-gray-600">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Todo List -->
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800">Your Todos</h2>
+          </div>
+          <div id="loadingState" class="p-8 text-center hidden">
+            <span class="text-indigo-600 text-2xl mb-2 animate-spin">⏳</span>
+            <p class="text-gray-600">Loading todos...</p>
+          </div>
+          <div id="emptyState" class="p-8 text-center hidden">
+            <span class="text-gray-400 text-4xl mb-4">📭</span>
+            <p class="text-gray-600">
+              No todos found. Add your first todo above!
+            </p>
+          </div>
+          <div id="todoItems"></div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div
+        id="errorMsg"
+        class="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg max-w-sm hidden"
+      ></div>
+      <!-- Success Message -->
+      <div
+        id="successMsg"
+        class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg max-w-sm hidden"
+      ></div>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:8080/todos";
+      const todoItems = document.getElementById("todoItems");
+      const addTodoForm = document.getElementById("addTodoForm");
+      const todoInput = document.getElementById("todoInput");
+      const addBtn = document.getElementById("addBtn");
+      const loadingState = document.getElementById("loadingState");
+      const emptyState = document.getElementById("emptyState");
+      const errorMsg = document.getElementById("errorMsg");
+      const successMsg = document.getElementById("successMsg");
+      const totalTodos = document.getElementById("totalTodos");
+      const completedTodos = document.getElementById("completedTodos");
+      const pendingTodos = document.getElementById("pendingTodos");
+
+      function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove("hidden");
+        setTimeout(() => errorMsg.classList.add("hidden"), 3000);
+      }
+      function showSuccess(msg) {
+        successMsg.textContent = msg;
+        successMsg.classList.remove("hidden");
+        setTimeout(() => successMsg.classList.add("hidden"), 3000);
+      }
+
+      async function fetchTodos() {
+        loadingState.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+        todoItems.innerHTML = "";
+        try {
+          const res = await fetch(API_URL);
+          const todos = await res.json();
+          loadingState.classList.add("hidden");
+          if (!todos.length) {
+            emptyState.classList.remove("hidden");
+            totalTodos.textContent = "0";
+            completedTodos.textContent = "0";
+            pendingTodos.textContent = "0";
+            return;
+          }
+          totalTodos.textContent = todos.length;
+          completedTodos.textContent = todos.filter((t) => t.completed).length;
+          pendingTodos.textContent = todos.filter((t) => !t.completed).length;
+          todos.forEach((todo) => {
+            const div = document.createElement("div");
+            div.className =
+              "p-4 border-b border-gray-100 flex items-center justify-between hover:bg-gray-50 transition duration-200";
+            div.innerHTML = `
+              <span class="${
+                todo.completed ? "line-through text-gray-500" : "text-gray-800"
+              } font-medium">${todo.item}</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-full text-xs font-medium ${
+                  todo.completed
+                    ? "bg-green-100 text-green-800"
+                    : "bg-orange-100 text-orange-800"
+                }">${todo.completed ? "Completed" : "Pending"}</span>
+                <span class="text-gray-400 text-sm">#${todo.id}</span>
+                <button class="completeBtn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded transition" data-id="${
+                  todo.id
+                }" ${todo.completed ? "disabled" : ""}>Complete</button>
+              </div>
+            `;
+            todoItems.appendChild(div);
+          });
+          document.querySelectorAll(".completeBtn").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const id = btn.getAttribute("data-id");
+              btn.disabled = true;
+              try {
+                await fetch(`${API_URL}/${id}`, { method: "PATCH" });
+                showSuccess("Todo marked as completed!");
+                fetchTodos();
+              } catch {
+                showError("Failed to complete todo");
+              }
+            });
+          });
+        } catch {
+          loadingState.classList.add("hidden");
+          showError("Failed to load todos. Make sure the API is running.");
+        }
+      }
+
+      addTodoForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const item = todoInput.value.trim();
+        if (!item) return;
+        addBtn.disabled = true;
+        try {
+          // Get next id
+          const res = await fetch(API_URL);
+          const todos = await res.json();
+          const nextId = todos.length
+            ? (Math.max(...todos.map((t) => parseInt(t.id))) + 1).toString()
+            : "1";
+          await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: nextId, item, completed: false }),
+          });
+          todoInput.value = "";
+          showSuccess("Todo added successfully!");
+          fetchTodos();
+        } catch {
+          showError("Failed to add todo");
+        } finally {
+          addBtn.disabled = false;
+        }
+      });
+
+      // Initial load
+      fetchTodos();
+    </script>
+  </body>
+</html>

@@ -12,6 +12,9 @@ Perfect for learning Go web development, building productivity applications, or 
 - ✅ Toggle todo completion status
 - 🚀 Fast and lightweight
 - 📝 JSON API responses
+- 🎨 Beautiful frontend with HTML, Tailwind CSS & Vanilla JavaScript
+- 🌐 CORS enabled for frontend integration
+- 📱 Responsive design for mobile and desktop
 
 ## Prerequisites
 
@@ -40,6 +43,23 @@ go run main.go
 ```
 
 The server will start on `http://localhost:8080`
+
+4. Open the frontend:
+
+Open `index.html` in your browser or use a local server:
+
+```bash
+# Option 1: Open directly in browser
+open index.html
+
+# Option 2: Use Python's built-in server (if you have Python)
+python3 -m http.server 3000
+# Then open http://localhost:3000
+
+# Option 3: Use Node.js http-server (if you have Node.js)
+npx http-server -p 3000
+# Then open http://localhost:3000
+```
 
 ## API Endpoints
 
@@ -176,11 +196,31 @@ curl http://localhost:8080/todos/1
 curl -X PATCH http://localhost:8080/todos/1
 ```
 
+## Frontend Features
+
+The included HTML frontend provides a modern, responsive interface with:
+
+- 🎨 Modern gradient background and clean card-based layout
+- 📊 Dashboard statistics (total, completed, pending)
+- ➕ Add new todos instantly
+- ✅ Mark todos as complete with one click
+- 🔄 Real-time updates and notifications
+- 📱 Fully responsive and touch-friendly
+
+**Tech stack:** HTML, Tailwind CSS, and Vanilla JavaScript (no frameworks)
+
+**Usage:**
+
+1. Start the Go API server (`go run main.go`)
+2. Open `index.html` in your browser (or use a local server)
+3. Add, view, and complete todos directly from the web UI
+
 ## Project Structure
 
 ```
 todo-api/
 ├── main.go          # Main application file with all handlers
+├── index.html       # Frontend HTML file with Tailwind CSS
 ├── go.mod           # Go module file
 ├── go.sum           # Go dependencies checksum
 └── README.md        # Project documentation
@@ -200,7 +240,15 @@ type todo struct {
 
 ## Dependencies
 
+### Backend (Go)
+
 - [Gin Web Framework](https://github.com/gin-gonic/gin) - HTTP web framework written in Go
+- [Gin CORS Middleware](https://github.com/gin-contrib/cors) - CORS middleware for Gin
+
+### Frontend
+
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- Vanilla JavaScript (no frameworks)
 
 ## Development
 
