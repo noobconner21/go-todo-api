@@ -225,7 +225,6 @@ You can test the API using tools like:
 - [Insomnia](https://insomnia.rest/)
 - [HTTPie](https://httpie.io/)
 
-
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
