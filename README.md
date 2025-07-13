@@ -1,6 +1,8 @@
 # Todo API
 
-A simple REST API for managing todo items built with Go and the Gin web framework.
+A lightweight, high-performance REST API for managing todo items, built with Go and the Gin web framework. This API provides a clean and intuitive interface for creating, reading, and updating todo items with real-time status management.
+
+Perfect for learning Go web development, building productivity applications, or as a foundation for more complex task management systems. The API follows RESTful conventions and returns JSON responses, making it easy to integrate with any frontend framework or mobile application.
 
 ## Features
 
